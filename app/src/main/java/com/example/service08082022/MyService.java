@@ -1,5 +1,6 @@
 package com.example.service08082022;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -7,11 +8,14 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 /**
  * Created by pphat on 10/26/2022.
  */
 public class MyService extends Service {
+
+    Notification notification;
 
     // Khi dùng cho bound service
     @Nullable
@@ -24,6 +28,8 @@ public class MyService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d("BBB", "onCreate");
+        notification = createNotification("Thông báo", "Bắt đầu chạy dịch vụ");
+        startForeground(1, notification);
     }
 
     @Override
@@ -40,5 +46,14 @@ public class MyService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Toast.makeText(this, "on Destroy", Toast.LENGTH_SHORT).show();
+    }
+
+    private Notification createNotification(String title, String message) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "MY_CHANNEL");
+        builder.setContentTitle(title);
+        builder.setContentText(message);
+        builder.setSmallIcon(android.R.drawable.star_on);
+        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        return builder.build();
     }
 }
