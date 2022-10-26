@@ -19,7 +19,7 @@ import androidx.core.app.NotificationCompat;
 public class MyService extends Service {
 
     Notification notification;
-
+    NotificationManager notificationManager;
     // Khi dùng cho bound service
     @Nullable
     @Override
@@ -31,17 +31,27 @@ public class MyService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d("BBB", "onCreate");
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notification = createNotification("Thông báo", "Bắt đầu chạy dịch vụ");
         startForeground(1, notification);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String name = "";
-        if (intent != null) {
-           name = intent.getStringExtra("name");
-        }
-        Toast.makeText(this, "on Start Command, name: " + name, Toast.LENGTH_SHORT).show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < 100; i++) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    notification = createNotification("Đang đếm", "Số lần thực thi: " + i);
+                    notificationManager.notify(1, notification);
+                }
+            }
+        }).start();
         return START_REDELIVER_INTENT;
     }
 
