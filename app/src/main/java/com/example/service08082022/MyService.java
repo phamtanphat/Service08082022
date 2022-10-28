@@ -3,6 +3,7 @@ package com.example.service08082022;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -73,11 +74,23 @@ public class MyService extends Service {
     }
 
     private Notification createNotification(String title, String message) {
+
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "MY_CHANNEL");
         builder.setContentTitle(title);
         builder.setContentText(message);
         builder.setSmallIcon(android.R.drawable.star_on);
         builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        builder.setContentIntent(pendingIntent);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
