@@ -23,7 +23,7 @@ public class MyService extends Service {
     Notification notification;
     NotificationManager notificationManager;
     OnListenValueChange onListenValueChange;
-
+    boolean isStart = false;
     // Khi dùng cho bound service
     @Nullable
     @Override
@@ -49,21 +49,24 @@ public class MyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < 100; i++) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+        if (!isStart) {
+            isStart = true;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < 100; i++) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if (onListenValueChange != null) onListenValueChange.onChanged(i);
+                        notification = createNotification("Đang đếm", "Số lần thực thi: " + i);
+                        notificationManager.notify(1, notification);
                     }
-                    if (onListenValueChange != null) onListenValueChange.onChanged(i);
-                    notification = createNotification("Đang đếm", "Số lần thực thi: " + i);
-                    notificationManager.notify(1, notification);
                 }
-            }
-        }).start();
+            }).start();
+        }
         return START_REDELIVER_INTENT;
     }
 
