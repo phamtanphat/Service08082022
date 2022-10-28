@@ -68,6 +68,18 @@ public class MyService extends Service {
     }
 
     @Override
+    public void onRebind(Intent intent) {
+        super.onRebind(intent);
+        Toast.makeText(this, "rebind", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Toast.makeText(this, "unbind", Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         Toast.makeText(this, "on Destroy", Toast.LENGTH_SHORT).show();
@@ -76,7 +88,7 @@ public class MyService extends Service {
     private Notification createNotification(String title, String message) {
 
         Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this,
