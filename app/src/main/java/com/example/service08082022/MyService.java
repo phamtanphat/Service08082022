@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
@@ -20,11 +21,20 @@ public class MyService extends Service {
 
     Notification notification;
     NotificationManager notificationManager;
+    OnListenValueChange onListenValueChange;
+
     // Khi dùng cho bound service
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return new MyBinder();
+    }
+
+    class MyBinder extends Binder {
+
+        MyService getService() {
+            return MyService.this;
+        }
     }
 
     @Override
@@ -47,6 +57,7 @@ public class MyService extends Service {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    if (onListenValueChange != null) onListenValueChange.onChanged(i);
                     notification = createNotification("Đang đếm", "Số lần thực thi: " + i);
                     notificationManager.notify(1, notification);
                 }
@@ -75,5 +86,13 @@ public class MyService extends Service {
             notificationManager.createNotificationChannel(notificationChannel);
         }
         return builder.build();
+    }
+
+    public void setOnListenerValueChange(OnListenValueChange onListenerValueChange) {
+        this.onListenValueChange = onListenerValueChange;
+    }
+
+    interface OnListenValueChange{
+        void onChanged(int i);
     }
 }
